@@ -6,8 +6,75 @@
 
 <title>Conecta y Avanza</title>
 
-<style>
+<style> 
+#btnTest{
+font-size:1.3rem;
+padding:18px 35px;
+font-weight:bold;
+animation:pulse 1.5s infinite;
+box-shadow:0 0 20px rgba(25,135,84,.4);
+}
 
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.08);}
+100%{transform:scale(1);}
+}
+
+#modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.75);
+z-index:999;
+overflow:auto;
+}
+
+.modal-content{
+background:white;
+width:min(90%,800px);
+margin:40px auto;
+padding:25px;
+border-radius:12px;
+}
+
+.progress{
+height:20px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+margin:15px 0;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:var(--verde);
+}
+
+.option{
+display:block;
+width:100%;
+margin:10px 0;
+}
+
+.result-bar{
+height:30px;
+background:#ddd;
+border-radius:30px;
+overflow:hidden;
+margin:10px 0 25px;
+}
+
+.result-fill{
+height:100%;
+background:linear-gradient(90deg,#198754,#0f5132);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:bold;
+}
 :root{
     --verde:#0f5132;
     --verde-claro:#198754;
@@ -132,7 +199,18 @@ footer{
         de estudiantes universitarios
     </p>
 </header>
+<div class="card" style="text-align:center;border-left:8px solid #198754;">
+<h2>📝 Test de Autoevaluación Integral</h2>
 
+<p>
+Responde 20 preguntas aleatorias sobre factores psicológicos y sociales
+que pueden influir en tu rendimiento académico.
+</p>
+
+<button id="btnTest" onclick="startTest()">
+🚀 INICIAR TEST AHORA
+</button>
+</div>
 <div class="container">
 
 <!-- ANSIEDAD -->
@@ -352,7 +430,23 @@ style="margin-top:15px;font-weight:bold;color:#0f5132;"></p>
 </div>
 
 </div>
+<div id="modal">
+<div class="modal-content">
 
+<h2>Test de Autoevaluación</h2>
+
+<div class="progress">
+<div id="bar" class="progress-bar"></div>
+</div>
+
+<p id="counter"></p>
+
+<h3 id="question"></h3>
+
+<div id="answers"></div>
+
+</div>
+</div>
 <footer>
 Conecta y Avanza • Universidad Mesoamericana • Facultad de Ingeniería
 </footer>
@@ -401,6 +495,274 @@ function mostrarPsicologia(){
 }
 
 </script>
+function mostrarPsicologia(){
 
+    const frases=[
+        "Buscar ayuda psicológica también es cuidarte 💚",
+        "Tu salud mental merece atención 🌿",
+        "Hablar con un profesional puede ayudarte a avanzar 🧠",
+        "Pedir apoyo emocional es parte del crecimiento universitario 🤝"
+    ];
+
+    const random=
+        frases[Math.floor(Math.random()*frases.length)];
+
+    document.getElementById("psicoMsg").innerText=random;
+}
+
+const psicologicas=[
+"¿Te sientes estresado por la carga académica?",
+"¿Te cuesta concentrarte durante las clases?",
+"¿Procrastinas tareas frecuentemente?",
+"¿Sientes ansiedad antes de exámenes?",
+"¿Te sientes agotado emocionalmente?",
+"¿Pierdes motivación para estudiar?",
+"¿Te preocupan demasiado las notas?",
+"¿Te cuesta controlar emociones negativas?",
+"¿Te sientes sobrecargado por tus responsabilidades?",
+"¿Tienes problemas para organizar tu tiempo?",
+"¿Te distraes fácilmente al estudiar?",
+"¿Tienes insomnio debido a estudios?",
+"¿Te comparas constantemente con otros estudiantes?",
+"¿Te sientes inseguro sobre tu capacidad académica?",
+"¿Te frustras cuando obtienes malas calificaciones?",
+"¿Evitas actividades por nerviosismo?",
+"¿Mantienes malos hábitos de estudio?",
+"¿La universidad afecta tu bienestar emocional?",
+"¿Te cuesta recuperarte después de cometer errores?",
+"¿Sientes presión constante por rendir mejor?"
+];
+
+const sociales=[
+"¿Recibes apoyo familiar para estudiar?",
+"¿Tu hogar es adecuado para estudiar?",
+"¿Los problemas familiares afectan tu rendimiento?",
+"¿Tienes personas de confianza para hablar?",
+"¿Te sientes integrado con tus compañeros?",
+"¿La situación económica afecta tus estudios?",
+"¿Trabajas mientras estudias?",
+"¿Las responsabilidades familiares limitan tu tiempo?",
+"¿Sientes presión social de otras personas?",
+"¿Te cuesta relacionarte con otros estudiantes?",
+"¿Participas en actividades universitarias?",
+"¿Tu familia comprende tus exigencias académicas?",
+"¿Las distracciones en casa afectan tu concentración?",
+"¿Sientes apoyo de tus amistades?",
+"¿Has pensado abandonar tus estudios?",
+"¿Tienes conflictos frecuentes con otras personas?",
+"¿Tienes un espacio tranquilo para estudiar?",
+"¿Tus relaciones afectan tu estado emocional?",
+"¿Te sientes aislado socialmente?",
+"¿Recibes motivación de las personas cercanas?"
+];
+
+let preguntas=[];
+let indice=0;
+let puntajePsico=0;
+let puntajeSocial=0;
+
+function mezclar(array){
+return [...array].sort(()=>Math.random()-0.5);
+}
+
+function startTest(){
+
+preguntas=[
+
+...mezclar(psicologicas)
+.slice(0,10)
+.map(q=>({tipo:"p",texto:q})),
+
+...mezclar(sociales)
+.slice(0,10)
+.map(q=>({tipo:"s",texto:q}))
+
+];
+
+preguntas=mezclar(preguntas);
+
+indice=0;
+puntajePsico=0;
+puntajeSocial=0;
+
+document.getElementById("modal").style.display="block";
+
+mostrarPregunta();
+}
+
+function mostrarPregunta(){
+
+let pregunta=preguntas[indice];
+
+document.getElementById("counter").innerHTML=
+`Pregunta ${indice+1} de ${preguntas.length}`;
+
+document.getElementById("question").innerHTML=
+pregunta.texto;
+
+document.getElementById("bar").style.width=
+((indice/preguntas.length)*100)+"%";
+
+let respuestas=
+document.getElementById("answers");
+
+respuestas.innerHTML="";
+
+const opciones=[
+"Nunca",
+"A veces",
+"Frecuentemente",
+"Siempre"
+];
+
+opciones.forEach((texto,posicion)=>{
+
+let boton=
+document.createElement("button");
+
+boton.className="option";
+
+boton.innerText=texto;
+
+boton.onclick=()=>responder(posicion+1);
+
+respuestas.appendChild(boton);
+
+});
+
+}
+
+function responder(valor){
+
+if(preguntas[indice].tipo==="p"){
+puntajePsico+=valor;
+}
+else{
+puntajeSocial+=valor;
+}
+
+indice++;
+
+if(indice<preguntas.length){
+mostrarPregunta();
+}
+else{
+mostrarResultados();
+}
+
+}
+
+function mostrarResultados(){
+
+let porcentajePsico=
+Math.round((puntajePsico/40)*100);
+
+let porcentajeSocial=
+Math.round((puntajeSocial/40)*100);
+
+let recomendacionPsico="";
+let recomendacionSocial="";
+let recomendacionGeneral="";
+
+if(porcentajePsico<40){
+
+recomendacionPsico=
+"Tu nivel de riesgo psicológico es bajo. Mantén hábitos saludables y una buena organización.";
+
+}
+else if(porcentajePsico<70){
+
+recomendacionPsico=
+"Existe un nivel moderado de factores psicológicos. Se recomienda mejorar la gestión del tiempo y controlar el estrés.";
+
+}
+else{
+
+recomendacionPsico=
+"Existe un nivel alto de factores psicológicos. Considera buscar apoyo psicológico y fortalecer estrategias de bienestar emocional.";
+
+}
+
+if(porcentajeSocial<40){
+
+recomendacionSocial=
+"Tu entorno social parece favorable para el aprendizaje.";
+
+}
+else if(porcentajeSocial<70){
+
+recomendacionSocial=
+"Algunos factores sociales pueden influir en tu rendimiento. Fortalece tus redes de apoyo.";
+
+}
+else{
+
+recomendacionSocial=
+"Los factores sociales pueden afectar significativamente tu desempeño académico. Busca apoyo familiar o institucional.";
+
+}
+
+if(porcentajePsico>=70 || porcentajeSocial>=70){
+
+recomendacionGeneral=
+"Se recomienda buscar orientación profesional o institucional para fortalecer el bienestar académico y emocional.";
+
+}
+else if(porcentajePsico>=40 || porcentajeSocial>=40){
+
+recomendacionGeneral=
+"Existen áreas de mejora que pueden trabajarse mediante organización, apoyo social y hábitos saludables.";
+
+}
+else{
+
+recomendacionGeneral=
+"Tu situación general es favorable. Continúa fortaleciendo tus hábitos positivos.";
+
+}
+
+document.querySelector(".modal-content").innerHTML=`
+
+<h2>📊 Resultados del Test</h2>
+
+<h3>🧠 Factores Psicológicos</h3>
+
+<div class="result-bar">
+<div class="result-fill" style="width:${porcentajePsico}%">
+${porcentajePsico}%
+</div>
+</div>
+
+<p>${recomendacionPsico}</p>
+
+<hr>
+
+<h3>👥 Factores Sociales</h3>
+
+<div class="result-bar">
+<div class="result-fill" style="width:${porcentajeSocial}%">
+${porcentajeSocial}%
+</div>
+</div>
+
+<p>${recomendacionSocial}</p>
+
+<hr>
+
+<h3>📌 Recomendación General</h3>
+
+<p>${recomendacionGeneral}</p>
+
+<br>
+
+<button onclick="location.reload()">
+🔄 Realizar nuevamente
+</button>
+
+`;
+
+}
+
+</script>
 </body>
 </html>
